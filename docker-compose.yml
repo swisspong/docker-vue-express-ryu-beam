@@ -1,0 +1,43 @@
+version: "3"
+services:
+  # mdb:
+  #   image: mongo
+  #   # ports:
+  #   #   - "27017:27017"
+  #   container_name: mdb
+  #   volumes:
+  #     - ./db/:/data/db
+  nginx:
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "80:80"
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: "./webService-backend"
+    volumes:
+      - /app/node_modules
+      - ./webService-backend:/app
+
+    restart: unless-stopped
+    # ports:
+    #   - "3000:3000"
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: "./web-service-Vue-js"
+    volumes:
+      - /app/node_modules
+      - ./web-service-Vue-js:/app
+    restart: unless-stopped
+    # ports:
+    #   - "8080:8080"
+    depends_on:
+      - "backend"
